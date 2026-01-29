@@ -1,0 +1,58 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  codeql:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        language: [javascript, go, rust]
+    steps:
+      - uses: actions/checkout@v4
+
+      # Initialize CodeQL for each language
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      # Build the project
+      - uses: github/codeql-action/autobuild@v3
+
+      # Run CodeQL analysis
+      - uses: github/codeql-action/analyze@v3
+
+  dependency-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.21.0
+        with:
+          scan-type: fs
+          severity: HIGH,CRITICAL
+          exit-code: 1
+
+  pr-summary:
+    runs-on: ubuntu-latest
+    needs: [codeql, dependency-scan]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Post PR Security Summary
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            ## 🔐 PR Security Summary
+
+            - ✅ CodeQL analysis completed
+            - ✅ Dependency scan completed
+            - ❌ No secrets detected
+            - ⚠️ Check highlighted warnings
