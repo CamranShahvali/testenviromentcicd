@@ -1,3 +1,5 @@
+trigger security workflow
+
 # Person CRUD gRPC Application
 
 This is a full-stack application with a React TypeScript frontend using Vite, a Rust gRPC backend, and a Go connect backend.
