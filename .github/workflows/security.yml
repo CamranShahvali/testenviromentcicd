@@ -44,6 +44,7 @@ jobs:
   pr-summary:
     runs-on: ubuntu-latest
     needs: [codeql, dependency-scan]
+    if: ${{ always() }}
     steps:
       - uses: actions/checkout@v4
       - name: Post PR Security Summary
