@@ -18,6 +18,7 @@ go-connect-backend/tmp/
 go-connect-backend/gen/
 
 # Environment variables
+.venv-precommit/
 .env
 .env.local
 .env.development.local
